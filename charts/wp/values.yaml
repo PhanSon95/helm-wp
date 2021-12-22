@@ -1,0 +1,42 @@
+namespace: test
+nameOverride: ""
+fullnameOverride: ""
+
+wp:
+  deployment:
+    image: wordpress:4.8-apache
+    replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+  
+mysql:
+  deployment:
+    image: mysql:5.6
+    replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3306
+  pvc:
+    accessMode: ReadWriteOnce
+    storage: 4Gi
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: test2.zinza.com.vn
+      paths: 
+        - "/"
+  tls: 
+    - secretName: wp-tls
+      hosts:
+        - test2.zinza.com.vn
